@@ -1,76 +1,131 @@
-node express static example
-===========================
+# Static Website Template
 
-**(UPDATE: See [node-static-http-servers](https://github.com/rsp/node-static-http-servers) repo for more examples of serving static files with `express.static`, `express`, `connect`, `http` and `net` and better explanation)**
+This is a template for a static website that is published over a CDN.
 
-Example for Stack Overflow answer:
+After you create a project from this template, change and extend it to fit your
+specific requirements.
 
-* [Failed to load resource from same directory when redirecting Javascript](https://stackoverflow.com/questions/38441863/failed-to-load-resource-from-same-directory-when-redirecting-javascript/38442747#38442747)
+## Before you begin
 
-Also referenced in other Stack Overflow answers:
+### 1. Create a free Altostra account
+To create an account, simply login to the [Altostra Web Console](https://app.altostra.com).
 
-* [onload js call not working with node](https://stackoverflow.com/questions/38587286/onload-js-call-not-working-with-node/38587729#38587729)
-* [Sending whole folder content to client with express](https://stackoverflow.com/questions/40509666/sending-whole-folder-content-to-client-with-express/40510339#40510339)
-* [Loading partials fails on the server JS](https://stackoverflow.com/questions/40722476/loading-partials-fails-on-the-server-js/40722594#40722594)
-* [Node JS not serving the static image](https://stackoverflow.com/questions/40837359/node-js-not-serving-the-static-image/40839534#40839534)
-* [How to serve an image using nodejs](http://stackoverflow.com/questions/5823722/how-to-serve-an-image-using-nodejs/40899767#40899767)
-
-Installation
-------------
-clone git repo:
+### 2. Install the Altostra CLI
 ```sh
-git clone https://github.com/rsp/node-express-static-example.git
+# make sure you have Node.js 10 or above installed
+$ npm install -g @altostra/cli
 ```
-or download the ZIP file:
-```
-wget https://github.com/rsp/node-express-static-example/archive/master.zip
-```
-Inside the project directory run:
+
+### 3. Connect an a AWS account
+To connect an AWS account, click **Connect Cloud Account** on the [Web Console settings](https://app.altostra.com/settings) page.
+
+> If you don't wish to connect your account just yet, you can deploy to the [Playground](https://docs.altostra.com/reference/concepts/playground-environment.html) environment that simulates the cloud without creating actual resources.
+
+## Using the template
+
+You have several options to get started with this template:
+* Initialize a new project from the Altostra CLI and specify the template:
+
 ```sh
-npm i
+$ mkdir static-website
+$ cd static-website
+$ alto init --template static-website
 ```
-to install dependencies.
 
-Running
--------
+* Create a new project from the [Altostra Web Console](https://app.altostra.com/projects), you can select the `static-website` template from the list.
+
+* Apply the template to an existing Altostra project from Visual Studio Code by going to the Altostra view in the main toolbar and clicking on `static-website` in the templates list.
+
+## Deploying the project
+
+Start by logging in from the Altostra CLI:
 ```sh
-node app.js
+$ alto login
 ```
 
-Issues
-------
-For any bug reports or feature requests please
-[post an issue on GitHub][issues-url].
+>The deployment process is simple and involves a few commands.
+>For more information on each command refer to the [Altostra CLI documentation](https://docs.altostra.com/reference/CLI/altostra-cli.html).
 
-Author
-------
-[**Rafał Pocztarski**](https://pocztarski.com/)
-<br/>
-[![Follow on GitHub][github-follow-img]][github-follow-url]
-[![Follow on Twitter][twitter-follow-img]][twitter-follow-url]
-<br/>
-[![Follow on Stack Exchange][stackexchange-img]][stackoverflow-url]
+Create an [image](https://docs.altostra.com/howto/projects/deploy-project.html#create-a-project-image) of the project:
+```sh
+$ alto push v1.0
+```
 
-License
--------
-MIT License (Expat). See [LICENSE.md](LICENSE.md) for details.
+Deploy the image as a new
+[deployment](https://docs.altostra.com/reference/concepts/deployments.html) named `main` in the `Production` environment:
+```sh
+# omit "--new Production" to update rather than create
+$ alto deploy main:v1.0 --new Production
+```
 
-[github-url]: https://github.com/rsp/node-express-static-example
-[readme-url]: https://github.com/rsp/node-express-static-example#readme
-[issues-url]: https://github.com/rsp/node-express-static-example/issues
-[license-url]: https://github.com/rsp/node-express-static-example/blob/master/LICENSE.md
-[license-img]: https://img.shields.io/github/license/rsp/node-express-static-example.svg
-[travis-url]: https://travis-ci.org/rsp/node-express-static-example
-[travis-img]: https://travis-ci.org/rsp/node-express-static-example.svg?branch=master
-[snyk-url]: https://snyk.io/test/github/rsp/node-express-static-example
-[snyk-img]: https://snyk.io/test/github/rsp/node-express-static-example/badge.svg
-[david-url]: https://david-dm.org/rsp/node-express-static-example
-[david-img]: https://david-dm.org/rsp/node-express-static-example/status.svg
-[github-follow-url]: https://github.com/rsp
-[github-follow-img]: https://img.shields.io/github/followers/rsp.svg?style=social&label=Follow
-[twitter-follow-url]: https://twitter.com/intent/follow?screen_name=pocztarski
-[twitter-follow-img]: https://img.shields.io/twitter/follow/pocztarski.svg?style=social&label=Follow
-[stackoverflow-url]: https://stackoverflow.com/users/613198/rsp
-[stackexchange-url]: https://stackexchange.com/users/303952/rsp
-[stackexchange-img]: https://stackexchange.com/users/flair/303952.png
-# static-node
+## View the deployment status and details
+You have two options, list the deployment details in the terminal or open the Web Console.
+
+* Using the Altostra CLI:
+```sh
+$ alto deployments 
+
+# show details for the deployment "main"
+$ alto deployments main
+```
+
+* Using the Web Console:
+```sh
+# will open the Web Console for the current project
+$ alto console
+```
+
+## Upload and invalidate site content
+
+The infrastructure of our website is ready, but not the content, such as HTML and CSS files.  
+To complete our website deployment we need to upload the content files to the bucket, and invalidate the CDN cache.
+
+1. Wait for the infrastructure deployment to complete before proceeding. The
+bucket and CDN must be created on your cloud account before you can upload.  
+> CDN resources can take up to 20 mins to become available on AWS.
+
+2. Upload the content files for the `main` deployment:
+
+```sh
+# uploads files for all buckets and makes the files public
+$ alto sync main --all --public
+```
+
+3. Invalidate the CDN cache for the `main` deployment:
+
+```sh
+# invalidates the cache for all CDNs
+$ alto invalidate main --all
+```
+
+## Modifying the project
+To modify the project, install Altostra Tools for Visual Studio Code:
+
+From the terminal:
+```sh
+$ code --install-extension Altostra.altostra
+```
+
+or, search for Altostra Tools in the Visual Studio Code extensions view.
+
+or, directly from the [marketplace](https://marketplace.visualstudio.com/items?itemName=Altostra.altostra).
+
+> The extension adds an Altostra panel and visual additor that help you modify and
+> design the project infrastructure.
+
+## Template content
+
+### Cloud resources
+* S3 Bucket
+* CloudFront CDN
+
+### Website Files
+The template comes with an example website that consists of two files:
+- index.html
+- style.css
+
+These files are located in the `public` directory in the project root.
+To change the directory that you wish to upload, modify the bucket resource settings using Altostra.
+For more information, visit
+[Altostra's documentation](https://d1nn0ezj50ac1m.cloudfront.net/howto/create-static-website.html#option-b-design-the-architecture)
+website.
